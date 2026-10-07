@@ -24,38 +24,40 @@ import (
 
 // Env vars used for configuration
 const (
-	intervalEnvVar             = "CACHING_INTERVAL_HOURS"
-	daemonsetNameEnvVar        = "DAEMONSET_NAME"
-	daemonsetAnnotationsEnvVar = "DAEMONSET_ANNOTATIONS"
-	namespaceEnvVar            = "NAMESPACE"
-	imagesEnvVar               = "IMAGES"
-	cachingMemRequestEnvVar    = "CACHING_MEMORY_REQUEST"
-	cachingMemLimitEnvVar      = "CACHING_MEMORY_LIMIT"
-	cachingCpuRequestEnvVar    = "CACHING_CPU_REQUEST"
-	cachingCpuLimitEnvVar      = "CACHING_CPU_LIMIT"
-	nodeSelectorEnvVar         = "NODE_SELECTOR"
-	imagePullSecretsEnvVar     = "IMAGE_PULL_SECRETS"
-	affinityEnvVar             = "AFFINITY"
-	kipImageEnvVar             = "KIP_IMAGE"
-	tolerationsEnvVar          = "TOLERATIONS"
+	intervalEnvVar                = "CACHING_INTERVAL_HOURS"
+	daemonsetNameEnvVar           = "DAEMONSET_NAME"
+	daemonsetAnnotationsEnvVar    = "DAEMONSET_ANNOTATIONS"
+	daemonsetPodAnnotationsEnvVar = "DAEMONSET_POD_ANNOTATIONS"
+	namespaceEnvVar               = "NAMESPACE"
+	imagesEnvVar                  = "IMAGES"
+	cachingMemRequestEnvVar       = "CACHING_MEMORY_REQUEST"
+	cachingMemLimitEnvVar         = "CACHING_MEMORY_LIMIT"
+	cachingCpuRequestEnvVar       = "CACHING_CPU_REQUEST"
+	cachingCpuLimitEnvVar         = "CACHING_CPU_LIMIT"
+	nodeSelectorEnvVar            = "NODE_SELECTOR"
+	imagePullSecretsEnvVar        = "IMAGE_PULL_SECRETS"
+	affinityEnvVar                = "AFFINITY"
+	kipImageEnvVar                = "KIP_IMAGE"
+	tolerationsEnvVar             = "TOLERATIONS"
 )
 
 // Default values where applicable
 const (
-	defaultDeploymentName       = "kubernetes-image-puller"
-	defaultDaemonsetName        = "kubernetes-image-puller"
-	defaultDaemonsetAnnotations = "{}"
-	defaultNamespace            = "k8s-image-puller"
-	defaultCachingMemRequest    = "1Mi"
-	defaultCachingMemLimit      = "5Mi"
-	defaultCachingInterval      = 1
-	defaultCachingCpuRequest    = ".05"
-	defaultCachingCpuLimit      = ".2"
-	defaultNodeSelector         = "{}"
-	defaultImagePullSecret      = ""
-	defaultAffinity             = "{}"
-	defaultImage                = "quay.io/eclipse/kubernetes-image-puller:next"
-	defaultTolerations          = "[]"
+	defaultDeploymentName          = "kubernetes-image-puller"
+	defaultDaemonsetName           = "kubernetes-image-puller"
+	defaultDaemonsetAnnotations    = "{}"
+	defaultDaemonsetPodAnnotations = "{}"
+	defaultNamespace               = "k8s-image-puller"
+	defaultCachingMemRequest       = "1Mi"
+	defaultCachingMemLimit         = "5Mi"
+	defaultCachingInterval         = 1
+	defaultCachingCpuRequest       = ".05"
+	defaultCachingCpuLimit         = ".2"
+	defaultNodeSelector            = "{}"
+	defaultImagePullSecret         = ""
+	defaultAffinity                = "{}"
+	defaultImage                   = "quay.io/eclipse/kubernetes-image-puller:next"
+	defaultTolerations             = "[]"
 )
 
 func getCachingInterval() int {
@@ -106,6 +108,16 @@ func processDaemonsetAnnotationsEnvVar() map[string]string {
 		log.Fatalf("Failed to unmarshal daemonset annotations json: %s", err)
 	}
 	return daemonsetAnnotations
+}
+
+func processDaemonsetPodAnnotationsEnvVar() map[string]string {
+	rawDaemonsetPodAnnotations := getEnvVarOrDefault(daemonsetPodAnnotationsEnvVar, defaultDaemonsetPodAnnotations)
+	daemonsetPodAnnotations := make(map[string]string)
+	err := json.Unmarshal([]byte(rawDaemonsetPodAnnotations), &daemonsetPodAnnotations)
+	if err != nil {
+		log.Fatalf("Failed to unmarshal daemonset pod annotations json: %s", err)
+	}
+	return daemonsetPodAnnotations
 }
 
 func processNodeSelectorEnvVar() map[string]string {

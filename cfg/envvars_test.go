@@ -88,6 +88,51 @@ func TestProcessDaemonsetAnnotationsEnvVar(t *testing.T) {
 	}
 }
 
+func TestProcessDaemonsetPodAnnotationsEnvVar(t *testing.T) {
+	type testcase struct {
+		name                         string
+		daemonsetPodAnnotations      string
+		isDaemonsetPodAnnotationsSet bool
+		want                         map[string]string
+	}
+
+	testcases := []testcase{
+		{
+			name:                         "default daemonset pod annotations, DAEMONSET_POD_ANNOTATIONS set",
+			daemonsetPodAnnotations:      "{}",
+			isDaemonsetPodAnnotationsSet: true,
+			want:                         map[string]string{},
+		},
+		{
+			name:                         "annotation disabling sidecar injection, DAEMONSET_POD_ANNOTATIONS set",
+			daemonsetPodAnnotations:      "{\"sidecar.istio.io/inject\": \"false\"}",
+			isDaemonsetPodAnnotationsSet: true,
+			want: map[string]string{
+				"sidecar.istio.io/inject": "false",
+			},
+		},
+		{
+			name:                         "default env var, DAEMONSET_POD_ANNOTATIONS not set",
+			daemonsetPodAnnotations:      "{\"this\": \"shouldn't be set\"}",
+			isDaemonsetPodAnnotationsSet: false,
+			want:                         map[string]string{},
+		},
+	}
+
+	for _, c := range testcases {
+		t.Run(c.name, func(t *testing.T) {
+			if c.isDaemonsetPodAnnotationsSet {
+				t.Setenv("DAEMONSET_POD_ANNOTATIONS", c.daemonsetPodAnnotations)
+			}
+			got := processDaemonsetPodAnnotationsEnvVar()
+
+			if d := cmp.Diff(c.want, got); d != "" {
+				t.Errorf("(-want, +got): %s", d)
+			}
+		})
+	}
+}
+
 func TestProcessNodeSElectorEnvVar(t *testing.T) {
 	type testcase struct {
 		name              string

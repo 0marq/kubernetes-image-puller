@@ -25,6 +25,7 @@ func TestEnvVars(t *testing.T) {
 			want: Config{
 				DaemonsetName: "kubernetes-image-puller",
 				DaemonsetAnnotations: map[string]string{},
+				DaemonsetPodAnnotations: map[string]string{},
 				Namespace:     "k8s-image-puller",
 				Images: map[string]string{
 					"che-code":              "quay.io/che-incubator/che-code:next",
@@ -47,6 +48,7 @@ func TestEnvVars(t *testing.T) {
 			env: map[string]string{
 				"DAEMONSET_NAME":        "custom-daemonset-name",
 				"DAEMONSET_ANNOTATIONS": "{\"reloader.stakater.com/auto\": \"true\"}",
+				"DAEMONSET_POD_ANNOTATIONS": "{\"sidecar.istio.io/inject\": \"false\"}",
 				"NAMESPACE":             "my-namespace",
 				"NODE_SELECTOR":         "{\"type\": \"compute\"}",
 				"CACHING_CPU_REQUEST":   ".055",
@@ -59,6 +61,9 @@ func TestEnvVars(t *testing.T) {
 				DaemonsetName: "custom-daemonset-name",
 				DaemonsetAnnotations: map[string]string{
 					"reloader.stakater.com/auto": "true",
+				},
+				DaemonsetPodAnnotations: map[string]string{
+					"sidecar.istio.io/inject": "false",
 				},
 				Namespace:     "my-namespace",
 				Images: map[string]string{

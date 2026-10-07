@@ -6,6 +6,7 @@ data:
   IMAGES: "{{ .Values.configMap.images }}"
   DAEMONSET_NAME: "{{ .Values.deploymentName }}"
   DAEMONSET_ANNOTATIONS: {{ if kindIs "string" .Values.configMap.daemonsetAnnotations }}{{ .Values.configMap.daemonsetAnnotations | quote }}{{ else }}{{ .Values.configMap.daemonsetAnnotations | toJson | quote }}{{ end }}
+  DAEMONSET_POD_ANNOTATIONS: {{ if kindIs "string" .Values.configMap.daemonsetPodAnnotations }}{{ .Values.configMap.daemonsetPodAnnotations | quote }}{{ else }}{{ .Values.configMap.daemonsetPodAnnotations | toJson | quote }}{{ end }}
   CACHING_INTERVAL_HOURS: "{{ .Values.configMap.cachingIntervalHours }}"
   NAMESPACE: "{{ .Release.Namespace }}"
   CACHING_MEMORY_REQUEST: "{{ .Values.configMap.cachingMemoryRequest }}"

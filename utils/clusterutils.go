@@ -141,7 +141,8 @@ func getDaemonset(deployment *appsv1.Deployment, openShift bool) *appsv1.DaemonS
 						"test":                   "daemonset-test",
 						"app.kubernetes.io/name": "image-puller",
 					},
-					Name: "test-po",
+					Annotations: cfg.DaemonsetPodAnnotations,
+					Name:        "test-po",
 				},
 				Spec: corev1.PodSpec{
 					SecurityContext:               podSecurityContext(openShift),

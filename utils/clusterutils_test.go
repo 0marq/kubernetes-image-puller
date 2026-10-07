@@ -108,6 +108,21 @@ func TestGetDaemonsetEmptyDirVolume(t *testing.T) {
 	assert.Equal(t, resource.MustParse("50Mi"), *volumes[0].EmptyDir.SizeLimit, "SizeLimit should be 50Mi")
 }
 
+func TestGetDaemonsetAnnotations(t *testing.T) {
+	t.Setenv("IMAGES", "che-code=quay.io/che-incubator/che-code:next;base-developer-image=quay.io/devfile/base-developer-image:ubi9-latest")
+	t.Setenv("CACHING_INTERVAL_HOURS", "1")
+	t.Setenv("DAEMONSET_ANNOTATIONS", `{"reloader.stakater.com/auto": "true"}`)
+	t.Setenv("DAEMONSET_POD_ANNOTATIONS", `{"sidecar.istio.io/inject": "false"}`)
+
+	deployment := &appsv1.Deployment{
+		ObjectMeta: metav1.ObjectMeta{Name: "test", UID: "test-uid"},
+	}
+	ds := getDaemonset(deployment, false)
+
+	assert.Equal(t, map[string]string{"reloader.stakater.com/auto": "true"}, ds.Annotations, "DAEMONSET_ANNOTATIONS should be set on the DaemonSet")
+	assert.Equal(t, map[string]string{"sidecar.istio.io/inject": "false"}, ds.Spec.Template.Annotations, "DAEMONSET_POD_ANNOTATIONS should be set on the pod template")
+}
+
 // This is the only function that does not require a kubernetes client.  The rest of the tests are in ./e2e
 func TestGetContainers(t *testing.T) {
 	type testcase struct {

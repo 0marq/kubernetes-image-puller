@@ -19,6 +19,7 @@ configMap:
   cachingCpuRequest: ".05"
   cachingCpuLimit: ".2"
   daemonsetAnnotations: "{}"
+  daemonsetPodAnnotations: "{}"
   nodeSelector: "{}"
   imagePullSecrets: ""
   affinity: "{}"
